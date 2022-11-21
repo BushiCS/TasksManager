@@ -1,6 +1,7 @@
 package ru.netology.javacore;
 
 import com.google.gson.Gson;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +14,7 @@ public class Client {
 
     public static void main(String[] args) {
         Gson gson = new Gson();
-        Task task = new Task("ADD", "Гольф");
+        Task task = new Task("ADD", "Первая");
         try (Socket clientSocket = new Socket(HOST, PORT);
              PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {

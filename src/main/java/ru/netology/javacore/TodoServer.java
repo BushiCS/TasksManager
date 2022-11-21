@@ -1,28 +1,32 @@
 package ru.netology.javacore;
 
 import com.google.gson.Gson;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.*;
 
 public class TodoServer {
 
     private final int port;
     private final Todos todos;
     private final Gson gson;
+    private final Deque<Task> logList;
+
 
     public TodoServer(int port, Todos todos) {
-        //...
         this.port = port;
         this.todos = todos;
         gson = new Gson();
+        logList = new ArrayDeque<>();
     }
 
-    public void start() throws IOException {
+    @SuppressWarnings("InfiniteLoopStatement")
+    public void start() {
         System.out.println("Starting server at " + port + "...");
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server started");
+            System.out.println("Server started.");
             while (true) {
                 try (
                         Socket socket = serverSocket.accept();
@@ -30,13 +34,33 @@ public class TodoServer {
                         PrintWriter out = new PrintWriter(socket.getOutputStream())
                 ) {
                     Task task = gson.fromJson(in.readLine(), Task.class);
+                    System.out.println(gson.toJson(task));
                     switch (task.getType()) {
                         case "ADD":
-                            todos.addTask(task.getTask());
+                            if (todos.addTask(task.getTask())) {
+                                logList.offer(new Task(task.getType(), task.getTask()));
+                            }
                             break;
                         case "REMOVE":
-                            todos.removeTask(task.getTask());
+                            if (todos.removeTask(task.getTask())) {
+                                logList.offer(new Task(task.getType(), task.getTask()));
+                            }
                             break;
+                        case "RESTORE":
+                            if (!logList.isEmpty()) {
+                                var logType = logList.getLast().getType();
+                                var logTask = logList.getLast().getTask();
+                                if (logType.equals("ADD")) {
+                                    todos.removeTask(logTask);
+                                    logList.removeLast();
+                                    break;
+                                }
+                                if (logType.equals("REMOVE")) {
+                                    todos.addTask(logTask);
+                                    logList.removeLast();
+                                    break;
+                                }
+                            }
                     }
                     out.println(todos.getAllTasks());
                 }
@@ -45,9 +69,5 @@ public class TodoServer {
             System.out.println("Не могу стартовать сервер");
             e.printStackTrace();
         }
-    }
-
-    public Todos getTodos() {
-        return todos;
     }
 }
