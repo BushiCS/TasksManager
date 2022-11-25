@@ -10,6 +10,7 @@ public class Task {
         this.task = task;
     }
 
+    @SuppressWarnings("unused")
     public Task(String type) {
         this.type = type;
     }

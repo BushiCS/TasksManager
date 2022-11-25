@@ -17,7 +17,7 @@ public class Todos {
     }
 
     public boolean removeTask(String task) {
-        if (tasks.size() != 0) {
+        if (!tasks.isEmpty()) {
             tasks.remove(task);
             return true;
         } else {
