@@ -40,7 +40,7 @@ public class TodosTests {
     }
 
     @Test
-    void maxTasksWithBoolean(){
+    void maxTasksWithBoolean() {
         todos.addTask("1");
         todos.addTask("2");
         todos.addTask("3");
@@ -52,7 +52,7 @@ public class TodosTests {
     }
 
     @Test
-    void removeEmptyTasks(){
+    void removeEmptyTasks() {
         Assertions.assertFalse(todos.removeTask("nothingToRemove"));
     }
 }
